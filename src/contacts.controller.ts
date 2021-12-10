@@ -1,12 +1,13 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Contact } from './contact.entity';
+import { CreateContactDto } from './CreateContact.dto';
 
 @Controller('/contacts')
 export class ContactsController {
   constructor(
-    @InjectRepository(Event)
+    @InjectRepository(Contact)
     private readonly repository: Repository<Contact>,
   ) {}
 
@@ -18,5 +19,12 @@ export class ContactsController {
   @Get(':id')
   async findOne(@Param('id') id) {
     return await this.repository.findOne(id);
+  }
+
+  @Post()
+  async create(@Body() input: CreateContactDto) {
+    return await this.repository.save({
+      ...input,
+    });
   }
 }
