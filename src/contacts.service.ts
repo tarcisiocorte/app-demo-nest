@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateContactDto } from './CreateContact.dto';
@@ -20,8 +20,12 @@ export class ContactsService {
   }
 
   public async CreateContact(input: CreateContactDto) {
-    return await this.repository.save({
-      ...input,
-    });
+    const savedContact = await this.repository.save({ ...input });
+    if (!savedContact) {
+      throw new InternalServerErrorException(
+        'Problem ocorried when trying to create a new contact',
+      );
+    }
+    return savedContact;
   }
 }
